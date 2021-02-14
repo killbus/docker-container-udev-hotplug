@@ -1,4 +1,4 @@
-# balenaStorage
+# [balenaStorage](https://github.com/balena-io-examples/balena-storage)
 
 This repository provides an example on how to automatically mount/unmount external drives when plugged/unplugged using UDev rules on a multicontainer balenaOS deployment.
 
