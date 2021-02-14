@@ -51,7 +51,7 @@ jobs:
         with:
           builder: ${{ steps.builder2.outputs.name }}
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.aarch64
           platforms: linux/arm64
           push: true
           tags: |
