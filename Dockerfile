@@ -26,7 +26,7 @@ RUN set -eux; \
 		*) echo >&2 "error: unsupported architecture ($apkArch)"; exit 1 ;; \
 	esac; \
 	\
-	wget -O docker.tgz "$url"; \
+	curl -o docker.tgz "$url"; \
 	\
 	tar --extract \
 		--file docker.tgz \
