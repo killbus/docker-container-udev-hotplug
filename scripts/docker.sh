@@ -11,37 +11,35 @@ export DOCKER_CERT_PATH=$(get_environment_value DOCKER_CERT_PATH)
 
 # initial docker
 _should_tls() {
-	[ -n "${DOCKER_TLS_CERTDIR:-}" ] \
-	&& [ -s "$DOCKER_TLS_CERTDIR/client/ca.pem" ] \
-	&& [ -s "$DOCKER_TLS_CERTDIR/client/cert.pem" ] \
-	&& [ -s "$DOCKER_TLS_CERTDIR/client/key.pem" ]
+    [ -n "${DOCKER_TLS_CERTDIR:-}" ] &&
+        [ -s "$DOCKER_TLS_CERTDIR/client/ca.pem" ] &&
+        [ -s "$DOCKER_TLS_CERTDIR/client/cert.pem" ] &&
+        [ -s "$DOCKER_TLS_CERTDIR/client/key.pem" ]
 }
 
 # if we have no DOCKER_HOST but we do have the default Unix socket (standard or rootless), use it explicitly
 if [ -z "${DOCKER_HOST:-}" ] && [ -S /var/run/docker.sock ]; then
-	export DOCKER_HOST=unix:///var/run/docker.sock
+    export DOCKER_HOST=unix:///var/run/docker.sock
 elif [ -z "${DOCKER_HOST:-}" ] && XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" && [ -S "$XDG_RUNTIME_DIR/docker.sock" ]; then
-	export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/docker.sock"
+    export DOCKER_HOST="unix://$XDG_RUNTIME_DIR/docker.sock"
 fi
 
 # if DOCKER_HOST isn't set (no custom setting, no default socket), let's set it to a sane remote value
 if [ -z "${DOCKER_HOST:-}" ]; then
-	if _should_tls || [ -n "${DOCKER_TLS_VERIFY:-}" ]; then
-		export DOCKER_HOST='tcp://docker:2376'
-	else
-		export DOCKER_HOST='tcp://docker:2375'
-	fi
+    if _should_tls || [ -n "${DOCKER_TLS_VERIFY:-}" ]; then
+        export DOCKER_HOST='tcp://docker:2376'
+    else
+        export DOCKER_HOST='tcp://docker:2375'
+    fi
 fi
-if [ "${DOCKER_HOST#tcp:}" != "$DOCKER_HOST" ] \
-	&& [ -z "${DOCKER_TLS_VERIFY:-}" ] \
-	&& [ -z "${DOCKER_CERT_PATH:-}" ] \
-	&& _should_tls \
-; then
-	export DOCKER_TLS_VERIFY=1
-	export DOCKER_CERT_PATH="$DOCKER_TLS_CERTDIR/client"
+if [ "${DOCKER_HOST#tcp:}" != "$DOCKER_HOST" ] &&
+    [ -z "${DOCKER_TLS_VERIFY:-}" ] &&
+    [ -z "${DOCKER_CERT_PATH:-}" ] &&
+    _should_tls \
+    ; then
+    export DOCKER_TLS_VERIFY=1
+    export DOCKER_CERT_PATH="$DOCKER_TLS_CERTDIR/client"
 fi
-
-
 
 check_docker_cmd() {
     local __ret=$1
@@ -109,7 +107,7 @@ action_containers() {
     for action in ${actions[@]}; do
         containers=($(get_docker_sc "${action}_containers" $devuuid))
         event_containers=($(get_docker_sc "${event}_${action}_containers" $devuuid))
-        containers+=( "${event_containers[@]}" )
+        containers+=("${event_containers[@]}")
         if [ ! -z "${containers#}" ]; then
             info "Trying to ${action} containers"
             for i in "${containers[@]}"; do
@@ -119,21 +117,24 @@ action_containers() {
                 if [ ! -z "${found_container}" ]; then
                     info "Found '${found_container}'. Doing '${action}' now..."
 
-                    case "$action" in \
-                        'restart') \
-                            docker restart ${found_container}; \
-                            ;; \
-                        'start') \
-                            docker start ${found_container}; \
-                            ;; \
-                        'stop') \
-                            docker stop ${found_container}; \
-                            ;; \
-                        'remove') \
-                            docker stop ${found_container} && docker rm ${found_container}; \
-                            ;; \
-                        *) error "error: unsupported action ($action)"; exit 1 ;; \
-                    esac;
+                    case "$action" in
+                    'restart')
+                        docker restart ${found_container}
+                        ;;
+                    'start')
+                        docker start ${found_container}
+                        ;;
+                    'stop')
+                        docker stop ${found_container}
+                        ;;
+                    'remove')
+                        docker stop ${found_container} && docker rm ${found_container}
+                        ;;
+                    *)
+                        error "error: unsupported action ($action)"
+                        exit 1
+                        ;;
+                    esac
 
                     if [ $? -eq 0 ]; then
                         info "Doing ${action} container '${found_container}' was successful"
@@ -162,7 +163,7 @@ action_services() {
     for action in ${actions[@]}; do
         services=($(get_docker_sc "${action}_services" $devuuid))
         event_services=($(get_docker_sc "${event}_${action}_services" $devuuid))
-        services+=( "${event_services[@]}" )
+        services+=("${event_services[@]}")
         if [ ! -z "${services#}" ]; then
             info "Trying to ${action} services"
 
@@ -173,12 +174,15 @@ action_services() {
                 if [ ! -z "${found_service}" ]; then
                     info "Found '${found_service}'. Running ${action} now..."
 
-                    case "$action" in \
-                        'update') \
-                            docker service update --force ${found_service}; \
-                            ;; \
-                        *) error "error: unsupported action ($action)"; exit 1 ;; \
-                    esac;
+                    case "$action" in
+                    'update')
+                        docker service update --force ${found_service}
+                        ;;
+                    *)
+                        error "error: unsupported action ($action)"
+                        exit 1
+                        ;;
+                    esac
 
                     if [ $? -eq 0 ]; then
                         info "Restarting service '${found_service}' was successful"

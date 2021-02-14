@@ -41,11 +41,11 @@ fi
 
 # Mount device
 if findmnt -rno SOURCE,TARGET $DEVNAME >/dev/null; then
-    info "Device $DEVNAME is already mounted!"
+  info "Device $DEVNAME is already mounted!"
 else
-    info "Mounting - Source: $DEVNAME - Destination: $MOUNT_POINT"
-    mkdir -p $MOUNT_POINT
-    mount -t $ID_FS_TYPE -o rw $DEVNAME $MOUNT_POINT
-    action_containers $ID_FS_UUID_ENC 'mount' >/proc/1/fd/1 2>/proc/1/fd/2
-    action_services $ID_FS_UUID_ENC 'mount' >/proc/1/fd/1 2>/proc/1/fd/2
+  info "Mounting - Source: $DEVNAME - Destination: $MOUNT_POINT"
+  mkdir -p $MOUNT_POINT
+  mount -t $ID_FS_TYPE -o rw $DEVNAME $MOUNT_POINT
+  action_containers $ID_FS_UUID_ENC 'mount' >/proc/1/fd/1 2>/proc/1/fd/2
+  action_services $ID_FS_UUID_ENC 'mount' >/proc/1/fd/1 2>/proc/1/fd/2
 fi

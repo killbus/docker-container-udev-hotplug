@@ -33,7 +33,7 @@ fatal() {
 }
 
 get_environment_value() {
-    key=$1
-    value=$(cat "${ENVIRONMENTFILE}" |  sed -r 's/^[\w]+=/\n&/g' | awk -F= -v key="$key" '$1==key{print $2}')
-    echo $value
+  key=$1
+  value=$(cat "${ENVIRONMENTFILE}" | sed -r 's/^[\w]+=/\n&/g' | awk -F= -v key="$key" '$1==key{print $2}')
+  echo $value
 }

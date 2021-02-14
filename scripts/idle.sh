@@ -1,11 +1,10 @@
 #!/bin/bash
 
 # dump system environment
-env > /tmp/environmentfile
+env >/tmp/environmentfile
 
 # Just an infinite loop to prevent container from exiting
-while : ;
-do
+while :; do
   echo 'Idling...'
   sleep 600
 done
