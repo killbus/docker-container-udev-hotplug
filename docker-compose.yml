@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+
+  external-drive:
+    build: .
+    privileged: true
+    environment: 
+      # container_name,container_name|devuuid;container_name,container_name|devuuid
+      MOUNT_START_CONTAINERS: "abc,456|BC48-5469;"
+      UNMOUNT_STOP_CONTAINERS: "abc,456|BC48-5469;"
