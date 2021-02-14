@@ -36,8 +36,8 @@ if findmnt -rno SOURCE,TARGET $DEVNAME >/dev/null; then
   info "Unmounting device - Source: $DEVNAME - Destination: $MOUNT_POINT"
   umount -f $MOUNT_POINT
   rmdir $MOUNT_POINT
-  action_containers $ID_FS_UUID_ENC 'unmount' >/proc/1/fd/1 2>/proc/1/fd/2
-  action_services $ID_FS_UUID_ENC 'unmount' >/proc/1/fd/1 2>/proc/1/fd/2
+  action_containers $ID_FS_UUID_ENC >/proc/1/fd/1 2>/proc/1/fd/2
+  action_services $ID_FS_UUID_ENC >/proc/1/fd/1 2>/proc/1/fd/2
 else
   info "No mount point found for device $DEVNAME."
 fi

@@ -55,6 +55,19 @@ check_docker_cmd() {
     fi
 }
 
+ere_quote() {
+    sed 's/[][\.|$(){}?+*^]/\\&/g' <<<"$*"
+}
+
+in_array() {
+    local -n arr=$1 #by name reference
+    local key=$2
+    if printf '%s\n' "${arr[@]}" | grep -q -P "^$(ere_quote ${key})$"; then
+        return 0
+    fi
+    return 1
+}
+
 get_sc_by_dev() {
     sc_groups=$1
     devuuid=$2
@@ -62,11 +75,34 @@ get_sc_by_dev() {
     IFS=';' read -ra sc_groups <<<"$sc_groups"
     for sc_group in ${sc_groups[@]}; do
         IFS='|' read -ra sc_group <<<"$sc_group"
-        IFS=',' read -ra sc <<<"${sc_group[0]}"
-        IFS=',' read -ra devs <<<"${sc_group[1]}"
-        if printf '%s\n' "${devs[@]}" | grep -q -P "^${devuuid}$"; then
-            echo "${sc[@]}"
-            break
+        IFS=',' read -ra devs <<<"${sc_group[0]}"
+        IFS=',' read -ra sc <<<"${sc_group[1]}"
+        if in_array devs $devuuid || in_array devs "+${devuuid}"; then
+            all_rule_matched=true
+            for dev in ${devs[@]}; do
+                if [[ $dev == *"${devuuid}" ]]; then
+                    continue
+                fi
+                # check whether required device is mounted or unmounted
+                if [ "${dev:0:1}" = "+" ]; then
+                    dev=${dev:1}
+                    findmnt -rno SOURCE,TARGET -S PARTUUID=$dev >/dev/null
+                    mounted=$?
+                    if [ "$ACTION" = "add" ]; then
+                        [ $mounted -eq 0 ] && continue
+                        all_rule_matched=false
+                        break
+                    else
+                        [ $mounted -ne 0 ] && continue
+                        all_rule_matched=false
+                        break
+                    fi
+                fi
+            done
+            if $all_rule_matched; then
+                echo "${sc[@]}"
+                break
+            fi
         fi
     done
 }
@@ -100,7 +136,7 @@ get_docker_sc() {
 
 action_containers() {
     local devuuid=$1
-    local event=$2
+    local event=$( [ "${ACTION}" = "add" ] && echo 'mount' || echo 'unmount' )
     declare -a containers
     declare -a actions=(restart start stop remove)
 

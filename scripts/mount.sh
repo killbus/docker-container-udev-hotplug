@@ -18,6 +18,9 @@ if [[ -z $DEVNAME ]]; then
 fi
 
 # Get required device information
+# first run, use blkid to refresh devices? or sleep to wait device ready?
+blkid > /dev/null
+
 ID_BUS=${ID_BUS:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_BUS/{ print $2 }')}
 ID_FS_TYPE=${ID_FS_TYPE:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_TYPE/{ print $2 }')}
 ID_FS_UUID_ENC=${ID_FS_UUID_ENC:=$(udevadm info -n $DEVNAME | awk -F "=" '/ID_FS_UUID_ENC/{ print $2 }')}
@@ -33,7 +36,7 @@ MOUNT_POINT=/mnt/storage-$ID_BUS-$ID_FS_LABEL_ENC-$ID_FS_UUID_ENC
 
 # Bail if file system is not supported by the kernel
 if ! grep -qw $ID_FS_TYPE /proc/filesystems; then
-  if $ID_FS_TYPE != 'exfat'; then
+  if [ "$ID_FS_TYPE" != "exfat" ]; then
     info "File system not supported: $ID_FS_TYPE"
     exit 1
   fi
@@ -46,6 +49,6 @@ else
   info "Mounting - Source: $DEVNAME - Destination: $MOUNT_POINT"
   mkdir -p $MOUNT_POINT
   mount -t $ID_FS_TYPE -o rw $DEVNAME $MOUNT_POINT
-  action_containers $ID_FS_UUID_ENC 'mount' >/proc/1/fd/1 2>/proc/1/fd/2
-  action_services $ID_FS_UUID_ENC 'mount' >/proc/1/fd/1 2>/proc/1/fd/2
+  action_containers $ID_FS_UUID_ENC >/proc/1/fd/1 2>/proc/1/fd/2
+  action_services $ID_FS_UUID_ENC >/proc/1/fd/1 2>/proc/1/fd/2
 fi

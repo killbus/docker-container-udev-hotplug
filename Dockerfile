@@ -2,6 +2,7 @@ FROM balenalib/amd64-alpine:run
 
 # Enable udev for detection of dynamically plugged devices
 ENV UDEV=on
+ENV ONLY_USB=1
 ARG DOCKER_VERSION=20.10.3
 
 COPY udev/usb.rules /etc/udev/rules.d/usb.rules
