@@ -48,4 +48,4 @@ COPY scripts scripts
 RUN chmod +x scripts/*
 
 # Change your CMD as needed
-CMD [ "/bin/bash", "/usr/src/scripts/idle.sh" ]
+CMD [ "balena-idle" ]
