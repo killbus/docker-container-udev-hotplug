@@ -35,8 +35,9 @@ RUN set -eux; \
 	; \
 	rm docker.tgz; \
 	\
-	dockerd --version; \
 	docker --version
+
+RUN  find /usr/local/bin/ -type f ! -name docker -exec rm '{}' \;
 
 
 # Install dependencies
