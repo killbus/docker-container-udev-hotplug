@@ -136,7 +136,7 @@ get_docker_sc() {
 
 action_containers() {
     local devuuid=$1
-    local event=$( [ "${ACTION}" = "add" ] && echo 'mount' || echo 'unmount' )
+    local event=$( [ "${ACTION}" = "remove" ] && echo 'unmount' || echo 'mount' )
     declare -a containers
     declare -a actions=(restart start stop remove)
 
@@ -192,7 +192,7 @@ action_containers() {
 
 action_services() {
     local devuuid=$1
-    local event=$2
+    local event=$( [ "${ACTION}" = "remove" ] && echo 'unmount' || echo 'mount' )
     declare -a services
     declare -a actions=(update)
 
