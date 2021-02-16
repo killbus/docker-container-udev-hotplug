@@ -42,7 +42,7 @@ RUN  find /usr/local/bin/ -type f ! -name docker -exec rm '{}' \;
 
 
 # Install dependencies
-RUN install_packages findmnt util-linux grep
+RUN install_packages findmnt util-linux grep ntfs-3g
 
 WORKDIR /usr/src
 COPY scripts scripts
