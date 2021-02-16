@@ -71,12 +71,12 @@ in_array() {
 get_sc_by_dev() {
     sc_groups=$1
     devuuid=$2
-    declare -a sc
+    declare -a result
     IFS=';' read -ra sc_groups <<<"$sc_groups"
     for sc_group in ${sc_groups[@]}; do
         IFS='|' read -ra sc_group <<<"$sc_group"
         IFS=',' read -ra devs <<<"${sc_group[0]}"
-        IFS=',' read -ra sc <<<"${sc_group[1]}"
+        IFS=',' read -ra scs <<<"${sc_group[1]}"
         if in_array devs $devuuid || in_array devs "+${devuuid}"; then
             all_rule_matched=true
             for dev in ${devs[@]}; do
@@ -88,23 +88,23 @@ get_sc_by_dev() {
                     dev=${dev:1}
                     findmnt -rno SOURCE,TARGET -S PARTUUID=$dev >/dev/null
                     mounted=$?
-                    if [ "$ACTION" = "add" ]; then
-                        [ $mounted -eq 0 ] && continue
+                    if [ "$ACTION" = "remove" ]; then
+                        [ $mounted -ne 0 ] && continue
                         all_rule_matched=false
                         break
                     else
-                        [ $mounted -ne 0 ] && continue
+                        [ $mounted -eq 0 ] && continue
                         all_rule_matched=false
                         break
                     fi
                 fi
             done
             if $all_rule_matched; then
-                echo "${sc[@]}"
-                break
+                result+=( "${scs[@]}")
             fi
         fi
     done
+    echo "${result[@]}"
 }
 
 get_docker_sc() {
