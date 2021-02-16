@@ -13,3 +13,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # rshared: To make the the mount operations also propagate to original mounts
       - /mnt/external-drive:/mnt:rshared
+      - /dev:/dev
