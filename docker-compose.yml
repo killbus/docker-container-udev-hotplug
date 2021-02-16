@@ -10,5 +10,6 @@ services:
       MOUNT_START_CONTAINERS: "BC48-5469|abc,456;ANOTHER-UUID|def,ghi;ANOTHER-UUID,+REQUIRED-UUID|jkl,mno"
       UNMOUNT_STOP_CONTAINERS: "BC48-5469|abc,456;ANOTHER-UUID|def,ghi;ANOTHER-UUID,+REQUIRED-UUID|jkl,mno"
     volumes:
-      - /mnt/storage:/mnt
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # rshared: To make the the mount operations also propagate to original mounts
+      - /mnt/external-drive:/mnt:rshared
