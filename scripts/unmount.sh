@@ -33,7 +33,7 @@ fi
 MOUNT_POINT=/mnt/storage-$ID_BUS-$ID_FS_LABEL_ENC-$ID_FS_UUID_ENC
 
 # Unmount device
-if findmnt -rno SOURCE,TARGET $DEVNAME >/dev/null; then
+if findmnt -rno SOURCE,TARGET --mountpoint $MOUNT_POINT >/dev/null; then
   info "Unmounting device - Source: $DEVNAME - Destination: $MOUNT_POINT"
   umount -f $MOUNT_POINT
   rmdir $MOUNT_POINT
